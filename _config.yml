@@ -3,8 +3,8 @@
 # ----------------------- #
 
 url: http://blog.boboism.com
-title: '{ blog: "boboism" }'
-subtitle: '{ content: %w( ruby rails python java html5 javascript database ) }'
+title: '{ blog: :boboism }'
+subtitle: '{ content: %w( ruby rails java html5 javascript stylesheet database ) }'
 author: Jianbo Su
 simple_search: http://google.com/search
 description:
