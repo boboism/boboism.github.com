@@ -1,24 +1,101 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[{ blog: :boboism }]]></title>
-  <link href="http://boboism.github.io/atom.xml" rel="self"/>
-  <link href="http://boboism.github.io/"/>
-  <updated>2013-05-23T20:36:54+08:00</updated>
-  <id>http://boboism.github.io/</id>
-  <author>
-    <name><![CDATA[Jianbo Su]]></name>
-    <email><![CDATA[sujianbo@gmail.com]]></email>
-  </author>
-  <generator uri="http://octopress.org/">Octopress</generator>
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>How To Crawl A Video Url Using Anemone - { blog: :boboism }</title>
+  <meta name="author" content="Jianbo Su">
 
   
-  <entry>
-    <title type="html"><![CDATA[How To Crawl A Video Url Using Anemone]]></title>
-    <link href="http://boboism.github.io/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone/"/>
-    <updated>2013-05-23T20:06:00+08:00</updated>
-    <id>http://boboism.github.io/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone</id>
-    <content type="html"><![CDATA[<p>刚刚翻回之前写的一些爬虫脚本，想分享一下其中一个比较有意思的爬虫。
+  <meta name="description" content="刚刚翻回之前写的一些爬虫脚本，想分享一下其中一个比较有意思的爬虫。
+这个爬虫脚本使用的是Chris Kite写的Anemone（一个Ruby的爬虫库）。它提供了非常简单的DSL用来爬取每一个页面以及其URLs，官方说会自动计算出其需要的最短路径。而且，这个爬虫库是多线程。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://boboism.github.io/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="{ blog: :boboism }" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=Lobster" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="/">{ blog: :boboism }</a></h1>
+  
+    <h2>{ content: %w( ruby rails java html5 javascript stylesheet database ) }</h2>
+  
+</hgroup>
+
+</header>
+  <div id="navigation">
+    <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:boboism.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  </div>
+  <div id="body"   class="collapse-sidebar sidebar-footer" >
+    <div id="main">
+      <div id="content">
+        <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">How to Crawl a Video Url Using Anemone</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-23T20:06:00+08:00" pubdate data-updated="true">2013-05-23 20:05:00 +0800</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>刚刚翻回之前写的一些爬虫脚本，想分享一下其中一个比较有意思的爬虫。
 这个爬虫脚本使用的是<a href="http://www.chriskite.com">Chris Kite</a>写的<a href="http://anemone.rubyforge.org/">Anemone</a>（一个Ruby的爬虫库）。它提供了非常简单的DSL用来爬取每一个页面以及其URLs，官方说会自动计算出其需要的最短路径。而且，这个爬虫库是多线程。由于Ruby正则表达式的写法简洁，因此，看上去非常简短。</p>
 
 <p>主要用到的gem有anemone，digest，还有用来保存链接的mongo</p>
@@ -343,302 +420,112 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-]]></content>
-  </entry>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
   
-  <entry>
-    <title type="html"><![CDATA[How To Write A Simple WebService Provider Using Ruby Other Than Java]]></title>
-    <link href="http://boboism.github.io/blog/2013/05/22/how-to-write-a-simple-webservice-provider-using-ruby-other-than-java/"/>
-    <updated>2013-05-22T12:14:00+08:00</updated>
-    <id>http://boboism.github.io/blog/2013/05/22/how-to-write-a-simple-webservice-provider-using-ruby-other-than-java</id>
-    <content type="html"><![CDATA[<p>最近在做一个程序，用于我的EAM（固定资产管理系统）跟公司的ERP对接固定资产的数据。开始是想直接用MES在用的接口系统，修修补补上。
-但是发现这个接口系统相对来说耦合比较厉害，如果要改来用，怕且都要搞个半个月才能上线。
-后来就打算直接用Ruby写算了。于是就有了这篇文章。
-下面看看其中的一个XML规格(大概),这是由ERP项目组定义的规法：</p>
 
-<figure class='code'><figcaption><span>资产导入</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-</span><span class='line'><span class="nt">&lt;Interface</span> <span class="na">Sender=</span><span class="s">&quot;EAM&quot;</span> <span class="na">Receiver=</span><span class="s">&quot;ERP&quot;</span> <span class="na">Billtype=</span><span class="s">&quot;F10&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;Bill&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;BillHeader&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;AcceptanceDate&gt;</span>2006-08-28 00:00:00<span class="nt">&lt;/AcceptanceDate&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;AssetName&gt;</span>笔记本电脑<span class="nt">&lt;/AssetName&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;AssetNo&gt;</span>703021<span class="nt">&lt;/AssetNo&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;Brand&gt;</span>IBM X60<span class="nt">&lt;/Brand&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;Category&gt;</span>7<span class="nt">&lt;/Category&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;IsSpecialFund&gt;</span>否<span class="nt">&lt;/IsSpecialFund&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;IsTariff&gt;</span>否<span class="nt">&lt;/IsTariff&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;IsVat&gt;</span>否<span class="nt">&lt;/IsVat&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;Model&gt;&lt;/Model&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;OriginalValue&gt;</span>100.0<span class="nt">&lt;/OriginalValue&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;Salvage&gt;</span>20.0<span class="nt">&lt;/Salvage&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;SerialNo&gt;</span>L3B6534<span class="nt">&lt;/SerialNo&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;ServiceDate&gt;</span>2006-08-28 00:00:00<span class="nt">&lt;/ServiceDate&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;SubCategory&gt;</span>03<span class="nt">&lt;/SubCategory&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;TaxPreferType&gt;</span>不属于<span class="nt">&lt;/TaxPreferType&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/BillHeader&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;BillBody&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;Entry&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;AllocationQuantity&gt;</span>0.5<span class="nt">&lt;/AllocationQuantity&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;ConstructionPeriod&gt;</span>1<span class="nt">&lt;/ConstructionPeriod&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;CostCenter&gt;</span>00001<span class="nt">&lt;/CostCenter&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;ManagementDepartment&gt;</span>00002<span class="nt">&lt;/ManagementDepartment&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;SpecialPurpose&gt;</span>01<span class="nt">&lt;/SpecialPurpose&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/Entry&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;Entry&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;AllocationQuantity&gt;</span>0.5<span class="nt">&lt;/AllocationQuantity&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;ConstructionPeriod&gt;</span>1<span class="nt">&lt;/ConstructionPeriod&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;CostCenter&gt;</span>00008<span class="nt">&lt;/CostCenter&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;ManagementDepartment&gt;</span>00002<span class="nt">&lt;/ManagementDepartment&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;SpecialPurpose&gt;</span>01<span class="nt">&lt;/SpecialPurpose&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;/Entry&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/BillBody&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/Bill&gt;</span>
-</span><span class='line'><span class="nt">&lt;/Interface&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+<span class="byline author vcard">Posted by <span class="fn">Jianbo Su</span></span>
+
+      
 
 
-<p>我最近都在用Ruby on Rails在开发项目（个人／公司），所以感觉上这个应该没有太大困难。不过还是有以下问题需要解决：</p>
-
-<ul>
-<li>不太规范的SOAP XML内容格式。</li>
-<li>How to call webservice？</li>
-<li>定时执行方式？</li>
-</ul>
 
 
-<p>想用ActiveRecord直接生成XML，但是需求的XML跟ActiveRecord直接生成出来的样子不太一样。后来看了ActiveRecord的XML相关的builder的代码，觉得还是使用builder定制吧。
-就有了以下的代码：</p>
-
-<figure class='code'><figcaption><span>ActiveRecord::Base#to_erp_xml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">ActiveRecord</span>
-</span><span class='line'>  <span class="k">class</span> <span class="nc">Base</span>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">to_erp_xml</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="p">{})</span>
-</span><span class='line'>      <span class="nb">require</span> <span class="s1">&#39;builder&#39;</span> <span class="k">unless</span> <span class="n">defined?</span><span class="p">(</span><span class="no">Builder</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">options</span> <span class="o">=</span> <span class="n">options</span><span class="o">.</span><span class="n">dup</span>
-</span><span class='line'>      <span class="n">xml</span> <span class="o">=</span> <span class="o">::</span><span class="ss">Builder</span><span class="p">:</span><span class="ss">:XmlMarkup</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'>      <span class="n">xml</span><span class="o">.</span><span class="n">instruct!</span> <span class="ss">:xml</span><span class="p">,</span> <span class="ss">:version</span> <span class="o">=&gt;</span> <span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="ss">:encoding</span> <span class="o">=&gt;</span> <span class="s2">&quot;UTF-8&quot;</span>
-</span><span class='line'>      <span class="n">interface_attributes</span> <span class="o">=</span> <span class="o">[</span><span class="ss">:sender</span><span class="p">,</span> <span class="ss">:receiver</span><span class="p">,</span> <span class="ss">:billtype</span><span class="o">].</span><span class="n">inject</span><span class="p">({})</span> <span class="k">do</span> <span class="o">|</span><span class="n">acc</span><span class="p">,</span> <span class="n">im</span><span class="o">|</span>
-</span><span class='line'>        <span class="n">acc</span><span class="o">.</span><span class="n">merge</span><span class="p">({</span><span class="n">im</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">camelize</span> <span class="o">=&gt;</span> <span class="n">options</span><span class="o">[</span><span class="ss">:interface</span><span class="o">][</span><span class="n">im</span><span class="o">]</span><span class="p">})</span> <span class="k">if</span> <span class="n">options</span><span class="o">[</span><span class="ss">:interface</span><span class="o">][</span><span class="n">im</span><span class="o">]</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>      <span class="n">xml</span><span class="o">.</span><span class="n">Interface</span><span class="p">(</span><span class="n">interface_attributes</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">interface</span><span class="o">|</span>
-</span><span class='line'>        <span class="k">if</span> <span class="n">options</span><span class="o">[</span><span class="ss">:include</span><span class="o">]</span>
-</span><span class='line'>          <span class="n">interface</span><span class="o">.</span><span class="n">Bill</span> <span class="k">do</span> <span class="o">|</span><span class="n">bill</span><span class="o">|</span>
-</span><span class='line'>            <span class="n">bill</span><span class="o">.</span><span class="n">BillHeader</span> <span class="k">do</span> <span class="o">|</span><span class="n">bill_header</span><span class="o">|</span>
-</span><span class='line'>              <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">column_names</span><span class="o">.</span><span class="n">sort</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">col</span><span class="o">|</span>
-</span><span class='line'>                <span class="k">unless</span> <span class="n">options</span><span class="o">[</span><span class="ss">:except</span><span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="nb">Array</span><span class="p">(</span><span class="n">options</span><span class="o">[</span><span class="ss">:except</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">to_sym</span><span class="p">)</span>
-</span><span class='line'>                  <span class="n">bill_header</span><span class="o">.</span><span class="n">tag!</span> <span class="n">col</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">camelize</span><span class="p">,</span> <span class="nb">self</span><span class="o">[</span><span class="n">col</span><span class="o">.</span><span class="n">to_sym</span><span class="o">]</span>
-</span><span class='line'>                <span class="k">end</span>
-</span><span class='line'>              <span class="k">end</span>
-</span><span class='line'>            <span class="k">end</span>
-</span><span class='line'>            <span class="n">bill</span><span class="o">.</span><span class="n">BillBody</span> <span class="k">do</span> <span class="o">|</span><span class="n">bill_body</span><span class="o">|</span>
-</span><span class='line'>              <span class="nb">Array</span><span class="p">(</span><span class="n">options</span><span class="o">[</span><span class="ss">:include</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="kp">attr</span><span class="o">|</span>
-</span><span class='line'>                <span class="nb">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="kp">attr</span><span class="o">.</span><span class="n">to_sym</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">association</span><span class="o">|</span>
-</span><span class='line'>                  <span class="n">bill_body</span><span class="o">.</span><span class="n">Entry</span> <span class="k">do</span> <span class="o">|</span><span class="n">entity</span><span class="o">|</span>
-</span><span class='line'>                    <span class="n">association</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">column_names</span><span class="o">.</span><span class="n">sort</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">col</span><span class="o">|</span>
-</span><span class='line'>                      <span class="k">unless</span> <span class="n">options</span><span class="o">[</span><span class="ss">:except</span><span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="nb">Array</span><span class="p">(</span><span class="n">options</span><span class="o">[</span><span class="ss">:except</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">to_sym</span><span class="p">)</span>
-</span><span class='line'>                        <span class="n">entity</span><span class="o">.</span><span class="n">tag!</span> <span class="n">col</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">camelize</span><span class="p">,</span> <span class="n">association</span><span class="o">[</span><span class="n">col</span><span class="o">.</span><span class="n">to_sym</span><span class="o">]</span>
-</span><span class='line'>                      <span class="k">end</span>
-</span><span class='line'>                    <span class="k">end</span>
-</span><span class='line'>                  <span class="k">end</span>
-</span><span class='line'>                <span class="k">end</span>
-</span><span class='line'>              <span class="k">end</span>
-</span><span class='line'>            <span class="k">end</span>
-</span><span class='line'>          <span class="k">end</span>
-</span><span class='line'>        <span class="k">end</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>      <span class="n">xml</span><span class="o">.</span><span class="n">target!</span><span class="o">.</span><span class="n">to_s</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
 
 
-<p>为啥写的这么别扭？其实是因为我直接使用了db的view去抓数据。哈哈哈，为防以后会有变更，这样直接修改SQL就可以了：</p>
-
-<figure class='code'><figcaption><span>AssetF10&AllocationF10</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">AssetF10</span> <span class="o">&lt;</span> <span class="ss">ActiveRecord</span><span class="p">:</span><span class="ss">:Base</span>
-</span><span class='line'>  <span class="nb">self</span><span class="o">.</span><span class="n">table_name</span> <span class="o">=</span> <span class="s2">&quot;vw_asset_erp&quot;</span>
-</span><span class='line'>  <span class="nb">self</span><span class="o">.</span><span class="n">primary_key</span> <span class="o">=</span> <span class="s2">&quot;id&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">has_many</span> <span class="ss">:allocations</span><span class="p">,</span> <span class="ss">:class_name</span> <span class="o">=&gt;</span> <span class="s2">&quot;AllocationF10&quot;</span><span class="p">,</span> <span class="ss">:foreign_key</span> <span class="o">=&gt;</span> <span class="s2">&quot;asset_id&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">AllocationF10</span> <span class="o">&lt;</span> <span class="ss">ActiveRecord</span><span class="p">:</span><span class="ss">:Base</span>
-</span><span class='line'>  <span class="nb">self</span><span class="o">.</span><span class="n">table_name</span> <span class="o">=</span> <span class="s2">&quot;vw_asset_allocation_erp&quot;</span>
-</span><span class='line'>  <span class="nb">self</span><span class="o">.</span><span class="n">primary_key</span> <span class="o">=</span> <span class="s2">&quot;id&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">belongs_to</span> <span class="ss">:asset</span><span class="p">,</span> <span class="ss">:class_name</span> <span class="o">=&gt;</span> <span class="s2">&quot;AssetF10&quot;</span><span class="c1">#, :foreign_key =&gt; &quot;asset_id&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
 
 
-<p>到这步，基本上XML是能够生成了，但是如何去调用呢？上rubygems.org看了看包的使用量，soap这一块savon相对来说比较好，而且文档还是很充分。感觉这样写的话相对Java的SOA调用使用xfire非常简洁方便。</p>
-
-<figure class='code'><figcaption><span>Savon.client</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">client</span> <span class="o">=</span> <span class="no">Savon</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="ss">:wsdl</span> <span class="o">=&gt;</span> <span class="s2">&quot;http://172.18.81.20/BOI/Service.asmx?WSDL&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="n">ws_attrs</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>  <span class="ss">:interface</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:sender</span> <span class="o">=&gt;</span> <span class="s2">&quot;EAM&quot;</span><span class="p">,</span> <span class="ss">:receiver</span> <span class="o">=&gt;</span> <span class="s2">&quot;ERP&quot;</span><span class="p">,</span> <span class="ss">:billtype</span> <span class="o">=&gt;</span> <span class="s2">&quot;F10&quot;</span><span class="p">},</span>
-</span><span class='line'>  <span class="ss">:func_name</span> <span class="o">=&gt;</span> <span class="s2">&quot;FixedAssetImport&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="ss">:handshake</span> <span class="o">=&gt;</span> <span class="s2">&quot;111111&quot;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="n">receivable_assets</span> <span class="o">=</span> <span class="o">[]</span>
-</span><span class='line'><span class="n">unreceivable_assets</span> <span class="o">=</span> <span class="o">[]</span>
-</span><span class='line'><span class="no">AssetF10</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">asset</span><span class="o">|</span>
-</span><span class='line'>  <span class="n">token</span> <span class="o">=</span> <span class="ss">UUIDTools</span><span class="p">:</span><span class="ss">:UUID</span><span class="o">.</span><span class="n">random_create</span><span class="o">.</span><span class="n">to_s</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">upcase</span>
-</span><span class='line'>  <span class="n">parameters</span> <span class="o">=</span> <span class="n">asset</span><span class="o">.</span><span class="n">to_erp_xml</span><span class="p">(</span><span class="n">ws_attrs</span><span class="o">.</span><span class="n">merge</span><span class="p">({</span><span class="ss">:include</span> <span class="o">=&gt;</span> <span class="ss">:allocations</span><span class="p">,</span> <span class="ss">:except</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:id</span><span class="p">,</span> <span class="ss">:asset_sync_status</span><span class="p">,</span> <span class="ss">:asset_id</span><span class="o">]</span><span class="p">}))</span>
-</span><span class='line'>  <span class="n">resp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="ss">:boi_invoke</span><span class="p">,</span> <span class="ss">:message</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>    <span class="ss">:from</span>       <span class="o">=&gt;</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">ws_attrs</span><span class="o">[</span><span class="ss">:interface</span><span class="o">][</span><span class="ss">:sender</span><span class="o">]</span><span class="si">}#{</span><span class="n">ws_attrs</span><span class="o">[</span><span class="ss">:handshake</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="ss">:to</span>         <span class="o">=&gt;</span> <span class="n">ws_attrs</span><span class="o">[</span><span class="ss">:interface</span><span class="o">][</span><span class="ss">:receiver</span><span class="o">]</span><span class="p">,</span>
-</span><span class='line'>    <span class="ss">:token</span>      <span class="o">=&gt;</span> <span class="n">token</span><span class="p">,</span>
-</span><span class='line'>    <span class="ss">:func_name</span>  <span class="o">=&gt;</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">ws_attrs</span><span class="o">[</span><span class="ss">:func_name</span><span class="o">]</span><span class="si">}</span><span class="s2">_</span><span class="si">#{</span><span class="n">ws_attrs</span><span class="o">[</span><span class="ss">:interface</span><span class="o">][</span><span class="ss">:billtype</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="ss">:parameters</span> <span class="o">=&gt;</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">parameters</span><span class="o">.</span><span class="n">to_s</span><span class="si">}</span><span class="s2">&quot;</span> <span class="p">})</span>
-</span><span class='line'>  <span class="nb">p</span> <span class="n">parameters</span>
-</span><span class='line'>  <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">body</span><span class="o">[</span><span class="ss">:boi_invoke_response</span><span class="o">][</span><span class="ss">:boi_invoke_result</span><span class="o">]</span>
-</span><span class='line'>    <span class="n">receivable_assets</span> <span class="o">&lt;&lt;</span> <span class="p">{</span><span class="n">asset</span><span class="o">.</span><span class="n">asset_no</span> <span class="o">=&gt;</span> <span class="s2">&quot;TOKEN=</span><span class="si">#{</span><span class="n">token</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
-</span><span class='line'>    <span class="c1"># update records</span>
-</span><span class='line'>    <span class="n">asset</span><span class="o">.</span><span class="n">asset_sync_status</span> <span class="o">=</span> <span class="mi">1</span>
-</span><span class='line'>    <span class="n">asset</span><span class="o">.</span><span class="n">save</span>
-</span><span class='line'>  <span class="k">else</span>
-</span><span class='line'>    <span class="n">unreceivable_assets</span> <span class="o">&lt;&lt;</span> <span class="p">{</span><span class="n">asset</span><span class="o">.</span><span class="n">asset_no</span> <span class="o">=&gt;</span> <span class="s2">&quot;TOKEN=</span><span class="si">#{</span><span class="n">token</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">resp</span><span class="o">.</span><span class="n">body</span><span class="o">[</span><span class="ss">:boi_invoke_response</span><span class="o">][</span><span class="ss">:result</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>OK，webservice call的问题已经解决了。就剩下最后一个问题，定时调用！
-一开始就想通过linux crontab来定时调用这接口，这样就会相对于固定资产管理系统本身的sidekiq独立起来（毕竟这个是一个月才调用1次的接口，无需实时调要求，感觉也没有这个必要）</p>
-
-<figure class='code'><figcaption><span>eam_soa_f10.sh</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/sh</span>
-</span><span class='line'>/home/it/.rvm/rubies/ruby-1.9.3-p374/bin/ruby /home/it/projects/ruby/cli/eam_soa/eam_soa_f10.rb &gt;&gt; /home/it/projects/ruby/cli/eam_soa/eam_soa_f10.log 2&gt;&amp;1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>接着在crontab中增加一行调用：</p>
-
-<figure class='code'><figcaption><span>crontab</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>* * 25 * * /home/it/projects/ruby/cli/eam_soa/eam_soa_f10.sh
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>OK~ 大功告成。相对Java版本的接口系统，同样功能大概只用了其1个类（差不多）的代码量就完成了～。</p>
-]]></content>
-  </entry>
   
-</feed>
+
+
+<time datetime="2013-05-23T20:06:00+08:00" pubdate data-updated="true">2013-05-23 20:05:00 +0800</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://boboism.github.io/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone/" data-via="boboism" data-counturl="http://boboism.github.io/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/05/22/how-to-write-a-simple-webservice-provider-using-ruby-other-than-java/" title="Previous Post: How To Write A Simple WebService Provider Using Ruby Other Than Java">&laquo; How To Write A Simple WebService Provider Using Ruby Other Than Java</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+      </div>
+    </div>
+    <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Jianbo Su -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a></span>
+</p>
+
+</footer>
+    
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+  </div>
+</body>
+</html>

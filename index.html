@@ -9,9 +9,8 @@
   <meta name="author" content="Jianbo Su">
 
   
-  <meta name="description" content="最近在做一个程序，用于我的EAM（固定资产管理系统）跟公司的ERP对接固定资产的数据。开始是想直接用MES在用的接口系统，修修补补上。
-但是发现这个接口系统相对来说耦合比较厉害，如果要改来用，怕且都要搞个半个月才能上线。
-后来就打算直接用Ruby写算了。于是就有了这篇文章。 &hellip;">
+  <meta name="description" content="刚刚翻回之前写的一些爬虫脚本，想分享一下其中一个比较有意思的爬虫。
+这个爬虫脚本使用的是Chris Kite写的Anemone（一个Ruby的爬虫库）。它提供了非常简单的DSL用来爬取每一个页面以及其URLs，官方说会自动计算出其需要的最短路径。而且，这个爬虫库是多线程。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +69,366 @@
       <div id="content">
         <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone/">How to Crawl a Video Url Using Anemone</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-23T20:06:00+08:00" pubdate data-updated="true">2013-05-23 20:05:00 +0800</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>刚刚翻回之前写的一些爬虫脚本，想分享一下其中一个比较有意思的爬虫。
+这个爬虫脚本使用的是<a href="http://www.chriskite.com">Chris Kite</a>写的<a href="http://anemone.rubyforge.org/">Anemone</a>（一个Ruby的爬虫库）。它提供了非常简单的DSL用来爬取每一个页面以及其URLs，官方说会自动计算出其需要的最短路径。而且，这个爬虫库是多线程。由于Ruby正则表达式的写法简洁，因此，看上去非常简短。</p>
+
+<p>主要用到的gem有anemone，digest，还有用来保存链接的mongo</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="n">install</span> <span class="n">anemone</span>
+</span><span class='line'><span class="n">gem</span> <span class="n">install</span> <span class="n">mongo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>首先，会定义一些全局变量,其中ENTRY_PATTERN是入口，PAGE_PATTERN是要爬的页面，ANY_PATTERN还会包含另外一些需要爬的链接：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">ENTRY_PATTERN</span> <span class="o">=</span> <span class="s2">&quot;http://www.oabt.org/?cid=5&quot;</span>
+</span><span class='line'><span class="no">PAGE_PATTERN</span>  <span class="o">=</span> <span class="sr">%r[cid=(?:5|25|6|7|8|11)(?:&amp;page=\d+)?$]</span>
+</span><span class='line'><span class="no">ANY_PATTERN</span>   <span class="o">=</span> <span class="no">PAGE_PATTERN</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>接着新建一个MONGODB以及表，因为是要爬<a href="http://www.oabt.org">http://www.oabt.org</a>，所以就直接命名了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">db</span> <span class="o">=</span> <span class="ss">Mongo</span><span class="p">:</span><span class="ss">:Connection</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">db</span><span class="p">(</span><span class="s2">&quot;oabt_org&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">movies</span> <span class="o">=</span> <span class="n">db</span><span class="o">[</span><span class="s2">&quot;movie&quot;</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>接着，是定义Anemone的一些options：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="ss">:threads</span>              <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span>                <span class="c1"># 线程数</span>
+</span><span class='line'>  <span class="ss">:verbose</span>              <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>             <span class="c1"># 详细显示 </span>
+</span><span class='line'>  <span class="ss">:discard_page_bodies</span>  <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:user_agent</span>           <span class="o">=&gt;</span> <span class="s2">&quot;Mozilla...&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:delay</span>                <span class="o">=&gt;</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:obey_robots_txt</span>      <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:depth_limit</span>          <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:redirect_limit</span>       <span class="o">=&gt;</span> <span class="mi">5</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:storage</span>              <span class="o">=&gt;</span> <span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:cookies</span>              <span class="o">=&gt;</span> <span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:accept_cookies</span>       <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:skip_query_strings</span>   <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:proxy_host</span>           <span class="o">=&gt;</span> <span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:proxy_port</span>           <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:read_timeout</span>         <span class="o">=&gt;</span> <span class="mi">20</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>官方代码中的default options</span><a href='https://github.com/chriskite/anemone/blob/master/lib/anemone/core.rb'>link</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">DEFAULT_OPTS</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1"># run 4 Tentacle threads to fetch pages</span>
+</span><span class='line'>  <span class="ss">:threads</span> <span class="o">=&gt;</span> <span class="mi">4</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1"># disable verbose output</span>
+</span><span class='line'>  <span class="ss">:verbose</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1"># don&#39;t throw away the page response body after scanning it for links</span>
+</span><span class='line'>  <span class="ss">:discard_page_bodies</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1"># identify self as Anemone/VERSION</span>
+</span><span class='line'>  <span class="ss">:user_agent</span> <span class="o">=&gt;</span> <span class="s2">&quot;Anemone/</span><span class="si">#{</span><span class="ss">Anemone</span><span class="p">:</span><span class="ss">:VERSION</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1"># no delay between requests</span>
+</span><span class='line'>  <span class="ss">:delay</span> <span class="o">=&gt;</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1"># don&#39;t obey the robots exclusion protocol</span>
+</span><span class='line'>  <span class="ss">:obey_robots_txt</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1"># by default, don&#39;t limit the depth of the crawl</span>
+</span><span class='line'>  <span class="ss">:depth_limit</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1"># number of times HTTP redirects will be followed</span>
+</span><span class='line'>  <span class="ss">:redirect_limit</span> <span class="o">=&gt;</span> <span class="mi">5</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1"># storage engine defaults to Hash in +process_options+ if none specified</span>
+</span><span class='line'>  <span class="ss">:storage</span> <span class="o">=&gt;</span> <span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1"># Hash of cookie name =&gt; value to send with HTTP requests</span>
+</span><span class='line'>  <span class="ss">:cookies</span> <span class="o">=&gt;</span> <span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1"># accept cookies from the server and send them back?</span>
+</span><span class='line'>  <span class="ss">:accept_cookies</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1"># skip any link with a query string? e.g. http://foo.com/?u=user</span>
+</span><span class='line'>  <span class="ss">:skip_query_strings</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1"># proxy server hostname </span>
+</span><span class='line'>  <span class="ss">:proxy_host</span> <span class="o">=&gt;</span> <span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1"># proxy server port number</span>
+</span><span class='line'>  <span class="ss">:proxy_port</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1"># HTTP read timeout in seconds</span>
+</span><span class='line'>  <span class="ss">:read_timeout</span> <span class="o">=&gt;</span> <span class="kp">nil</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>好了，接着就是开始爬了,#focus_crawl中会定义需要爬的URL，只会保留ANY_PATTERN的URL，接着，如果符合PAGE_PATTERN的，会在其页面中找他的title，id，reference url，还有就是他的下载链接：magnet／thunder／ed2k（这里会使用到NOKIGIRI，因为我熟悉css selector，所以代码中直接使用css selecor来抓），接着就会检查他的引用页的hash值是否已经存在，如果不存在就直接插入mongo：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">Anemone</span><span class="o">.</span><span class="n">crawl</span><span class="p">(</span><span class="no">ENTRY_PATTERN</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">anemone</span><span class="o">|</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">anemone</span><span class="o">.</span><span class="n">focus_crawl</span> <span class="k">do</span> <span class="o">|</span><span class="n">page</span><span class="o">|</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;focus </span><span class="si">#{</span><span class="n">page</span><span class="o">.</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="n">page</span><span class="o">.</span><span class="n">links</span><span class="o">.</span><span class="n">keep_if</span><span class="p">{</span><span class="o">|</span><span class="n">link</span><span class="o">|</span> <span class="n">link</span><span class="o">.</span><span class="n">to_s</span> <span class="o">=~</span> <span class="no">ANY_PATTERN</span><span class="p">}</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">anemone</span><span class="o">.</span><span class="n">on_pages_like</span><span class="p">(</span><span class="no">PAGE_PATTERN</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">page</span><span class="o">|</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">page</span><span class="o">.</span><span class="n">doc</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;crawl </span><span class="si">#{</span><span class="n">page</span><span class="o">.</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;crawl header:</span><span class="si">#{</span><span class="n">page</span><span class="o">.</span><span class="n">headers</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;crawl code:</span><span class="si">#{</span><span class="n">page</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;crawl body:</span><span class="si">#{</span><span class="n">page</span><span class="o">.</span><span class="n">body</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;crawl links:</span><span class="si">#{</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">links</span><span class="o">||[]</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:to_s</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;\n&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="n">page</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s1">&#39;tr&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">tr</span><span class="o">|</span>
+</span><span class='line'>        <span class="nb">p</span> <span class="s2">&quot;crawl tr&quot;</span>
+</span><span class='line'>        <span class="n">title</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">ref_url</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s1">&#39;td.name.magTitle a&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">{</span><span class="o">|</span><span class="n">a</span><span class="o">|</span> <span class="o">[</span><span class="n">a</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">a</span><span class="o">[</span><span class="s1">&#39;rel&#39;</span><span class="o">]</span><span class="p">,</span> <span class="n">a</span><span class="o">[</span><span class="s1">&#39;href&#39;</span><span class="o">]]</span><span class="p">}</span><span class="o">.</span><span class="n">first</span>
+</span><span class='line'>        <span class="k">if</span> <span class="nb">id</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">md5</span> <span class="o">=</span> <span class="ss">Digest</span><span class="p">:</span><span class="ss">:MD5</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">movies</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;md5&quot;</span> <span class="o">=&gt;</span> <span class="n">md5</span><span class="p">})</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">nil?</span><span class="p">)</span>
+</span><span class='line'>          <span class="n">cat</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s2">&quot;a.sbule&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">{</span><span class="o">|</span><span class="n">a</span><span class="o">|</span> <span class="o">[</span><span class="n">a</span><span class="o">[</span><span class="s1">&#39;href&#39;</span><span class="o">][</span><span class="sr">/\d+/</span><span class="o">]</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">text</span><span class="o">]</span><span class="p">}</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+</span><span class='line'>          <span class="n">ed2k_url</span><span class="p">,</span> <span class="n">mag_url</span><span class="p">,</span> <span class="n">thunder_url</span> <span class="o">=</span> <span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s1">&#39;td.dow a.ed2kDown&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">||</span><span class="p">{})</span><span class="o">[</span><span class="s1">&#39;ed2k&#39;</span><span class="o">]</span><span class="p">,</span> <span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s1">&#39;td.dow a.magDown&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">||</span><span class="p">{})</span><span class="o">[</span><span class="s1">&#39;href&#39;</span><span class="o">]</span><span class="p">,</span> <span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s1">&#39;td.dow a.thunder&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">||</span><span class="p">{})</span><span class="o">[</span><span class="s1">&#39;thunderhref&#39;</span><span class="o">]</span>
+</span><span class='line'>          <span class="n">movie</span> <span class="o">=</span> <span class="p">{</span><span class="ss">:md5</span> <span class="o">=&gt;</span> <span class="n">md5</span><span class="p">,</span> <span class="ss">:cat</span> <span class="o">=&gt;</span> <span class="n">cat</span><span class="p">,</span> <span class="ss">:ref_url</span> <span class="o">=&gt;</span> <span class="n">ref_url</span><span class="p">,</span> <span class="ss">:title</span> <span class="o">=&gt;</span> <span class="n">title</span><span class="p">,</span> <span class="ss">:ed2k_url</span> <span class="o">=&gt;</span> <span class="n">ed2k_url</span><span class="p">,</span> <span class="ss">:mag_url</span> <span class="o">=&gt;</span> <span class="n">mag_url</span><span class="p">,</span> <span class="ss">:thunder_url</span> <span class="o">=&gt;</span> <span class="n">thunder_url</span><span class="p">}</span>
+</span><span class='line'>          <span class="nb">p</span> <span class="s2">&quot;Inserting </span><span class="si">#{</span><span class="n">movie</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>          <span class="n">movies</span><span class="o">.</span><span class="n">insert</span> <span class="n">movie</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>全部的代码如下，总共不到60行的代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;anemone&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;digest/md5&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;mongo&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Patterns</span>
+</span><span class='line'><span class="no">ENTRY_PATTERN</span> <span class="o">=</span> <span class="s2">&quot;http://www.oabt.org/?cid=5&quot;</span>
+</span><span class='line'><span class="no">PAGE_PATTERN</span>  <span class="o">=</span> <span class="sr">%r[cid=(?:5|25|6|7|8|11)(?:&amp;page=\d+)?$]</span>
+</span><span class='line'><span class="no">ANY_PATTERN</span>   <span class="o">=</span> <span class="no">PAGE_PATTERN</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">db</span> <span class="o">=</span> <span class="ss">Mongo</span><span class="p">:</span><span class="ss">:Connection</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">db</span><span class="p">(</span><span class="s2">&quot;oabt_org&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">movies</span> <span class="o">=</span> <span class="n">db</span><span class="o">[</span><span class="s2">&quot;movie&quot;</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="ss">:threads</span>              <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:verbose</span>              <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:discard_page_bodies</span>  <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:user_agent</span>           <span class="o">=&gt;</span> <span class="s2">&quot;Mozilla...&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:delay</span>                <span class="o">=&gt;</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:obey_robots_txt</span>      <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:depth_limit</span>          <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:redirect_limit</span>       <span class="o">=&gt;</span> <span class="mi">5</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:storage</span>              <span class="o">=&gt;</span> <span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:cookies</span>              <span class="o">=&gt;</span> <span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:accept_cookies</span>       <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:skip_query_strings</span>   <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:proxy_host</span>           <span class="o">=&gt;</span> <span class="kp">nil</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:proxy_port</span>           <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:read_timeout</span>         <span class="o">=&gt;</span> <span class="mi">20</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nb">p</span> <span class="s2">&quot;begin&quot;</span>
+</span><span class='line'><span class="no">Anemone</span><span class="o">.</span><span class="n">crawl</span><span class="p">(</span><span class="no">ENTRY_PATTERN</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">anemone</span><span class="o">|</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">anemone</span><span class="o">.</span><span class="n">focus_crawl</span> <span class="k">do</span> <span class="o">|</span><span class="n">page</span><span class="o">|</span>
+</span><span class='line'>    <span class="nb">p</span> <span class="s2">&quot;focus </span><span class="si">#{</span><span class="n">page</span><span class="o">.</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>    <span class="n">page</span><span class="o">.</span><span class="n">links</span><span class="o">.</span><span class="n">keep_if</span><span class="p">{</span><span class="o">|</span><span class="n">link</span><span class="o">|</span> <span class="n">link</span><span class="o">.</span><span class="n">to_s</span> <span class="o">=~</span> <span class="no">ANY_PATTERN</span><span class="p">}</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">anemone</span><span class="o">.</span><span class="n">on_pages_like</span><span class="p">(</span><span class="no">PAGE_PATTERN</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">page</span><span class="o">|</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">page</span><span class="o">.</span><span class="n">doc</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;crawl </span><span class="si">#{</span><span class="n">page</span><span class="o">.</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;crawl header:</span><span class="si">#{</span><span class="n">page</span><span class="o">.</span><span class="n">headers</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;crawl code:</span><span class="si">#{</span><span class="n">page</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;crawl body:</span><span class="si">#{</span><span class="n">page</span><span class="o">.</span><span class="n">body</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="nb">p</span> <span class="s2">&quot;crawl links:</span><span class="si">#{</span><span class="p">(</span><span class="n">page</span><span class="o">.</span><span class="n">links</span><span class="o">||[]</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:to_s</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;\n&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>      <span class="n">page</span><span class="o">.</span><span class="n">doc</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s1">&#39;tr&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">tr</span><span class="o">|</span>
+</span><span class='line'>        <span class="nb">p</span> <span class="s2">&quot;crawl tr&quot;</span>
+</span><span class='line'>        <span class="n">title</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">ref_url</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s1">&#39;td.name.magTitle a&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">{</span><span class="o">|</span><span class="n">a</span><span class="o">|</span> <span class="o">[</span><span class="n">a</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">a</span><span class="o">[</span><span class="s1">&#39;rel&#39;</span><span class="o">]</span><span class="p">,</span> <span class="n">a</span><span class="o">[</span><span class="s1">&#39;href&#39;</span><span class="o">]]</span><span class="p">}</span><span class="o">.</span><span class="n">first</span>
+</span><span class='line'>        <span class="k">if</span> <span class="nb">id</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">md5</span> <span class="o">=</span> <span class="ss">Digest</span><span class="p">:</span><span class="ss">:MD5</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">movies</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">&quot;md5&quot;</span> <span class="o">=&gt;</span> <span class="n">md5</span><span class="p">})</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">nil?</span><span class="p">)</span>
+</span><span class='line'>          <span class="n">cat</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s2">&quot;a.sbule&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">collect</span><span class="p">{</span><span class="o">|</span><span class="n">a</span><span class="o">|</span> <span class="o">[</span><span class="n">a</span><span class="o">[</span><span class="s1">&#39;href&#39;</span><span class="o">][</span><span class="sr">/\d+/</span><span class="o">]</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">text</span><span class="o">]</span><span class="p">}</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
+</span><span class='line'>          <span class="n">ed2k_url</span><span class="p">,</span> <span class="n">mag_url</span><span class="p">,</span> <span class="n">thunder_url</span> <span class="o">=</span> <span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s1">&#39;td.dow a.ed2kDown&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">||</span><span class="p">{})</span><span class="o">[</span><span class="s1">&#39;ed2k&#39;</span><span class="o">]</span><span class="p">,</span> <span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s1">&#39;td.dow a.magDown&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">||</span><span class="p">{})</span><span class="o">[</span><span class="s1">&#39;href&#39;</span><span class="o">]</span><span class="p">,</span> <span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">css</span><span class="p">(</span><span class="s1">&#39;td.dow a.thunder&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="o">||</span><span class="p">{})</span><span class="o">[</span><span class="s1">&#39;thunderhref&#39;</span><span class="o">]</span>
+</span><span class='line'>          <span class="n">movie</span> <span class="o">=</span> <span class="p">{</span><span class="ss">:md5</span> <span class="o">=&gt;</span> <span class="n">md5</span><span class="p">,</span> <span class="ss">:cat</span> <span class="o">=&gt;</span> <span class="n">cat</span><span class="p">,</span> <span class="ss">:ref_url</span> <span class="o">=&gt;</span> <span class="n">ref_url</span><span class="p">,</span> <span class="ss">:title</span> <span class="o">=&gt;</span> <span class="n">title</span><span class="p">,</span> <span class="ss">:ed2k_url</span> <span class="o">=&gt;</span> <span class="n">ed2k_url</span><span class="p">,</span> <span class="ss">:mag_url</span> <span class="o">=&gt;</span> <span class="n">mag_url</span><span class="p">,</span> <span class="ss">:thunder_url</span> <span class="o">=&gt;</span> <span class="n">thunder_url</span><span class="p">}</span>
+</span><span class='line'>          <span class="nb">p</span> <span class="s2">&quot;Inserting </span><span class="si">#{</span><span class="n">movie</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>          <span class="n">movies</span><span class="o">.</span><span class="n">insert</span> <span class="n">movie</span>
+</span><span class='line'>        <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
