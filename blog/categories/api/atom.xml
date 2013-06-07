@@ -4,7 +4,7 @@
   <title><![CDATA[Category: API | { blog: :boboism }]]></title>
   <link href="http://boboism.github.io/blog/categories/api/atom.xml" rel="self"/>
   <link href="http://boboism.github.io/"/>
-  <updated>2013-06-07T21:11:36+08:00</updated>
+  <updated>2013-06-07T21:20:45+08:00</updated>
   <id>http://boboism.github.io/</id>
   <author>
     <name><![CDATA[Jianbo Su]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[How To Write A Simple WebService Provider Using Ruby Other Than Java]]></title>
+    <title type="html"><![CDATA[如何使用Ruby来写WebService的Provider]]></title>
     <link href="http://boboism.github.io/blog/2013/05/22/how-to-write-a-simple-webservice-provider-using-ruby-other-than-java/"/>
     <updated>2013-05-22T12:14:00+08:00</updated>
     <id>http://boboism.github.io/blog/2013/05/22/how-to-write-a-simple-webservice-provider-using-ruby-other-than-java</id>

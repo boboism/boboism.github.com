@@ -4,7 +4,7 @@
   <title><![CDATA[{ blog: :boboism }]]></title>
   <link href="http://boboism.github.io/atom.xml" rel="self"/>
   <link href="http://boboism.github.io/"/>
-  <updated>2013-06-07T21:11:36+08:00</updated>
+  <updated>2013-06-07T21:20:45+08:00</updated>
   <id>http://boboism.github.io/</id>
   <author>
     <name><![CDATA[Jianbo Su]]></name>
@@ -96,7 +96,7 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[How To Crawl A Video Url Using Anemone]]></title>
+    <title type="html"><![CDATA[如何使用Anemone来爬视频地址]]></title>
     <link href="http://boboism.github.io/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone/"/>
     <updated>2013-05-23T20:06:00+08:00</updated>
     <id>http://boboism.github.io/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone</id>
@@ -429,7 +429,7 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[How To Write A Simple WebService Provider Using Ruby Other Than Java]]></title>
+    <title type="html"><![CDATA[如何使用Ruby来写WebService的Provider]]></title>
     <link href="http://boboism.github.io/blog/2013/05/22/how-to-write-a-simple-webservice-provider-using-ruby-other-than-java/"/>
     <updated>2013-05-22T12:14:00+08:00</updated>
     <id>http://boboism.github.io/blog/2013/05/22/how-to-write-a-simple-webservice-provider-using-ruby-other-than-java</id>
