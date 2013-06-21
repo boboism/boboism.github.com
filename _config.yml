@@ -2,7 +2,7 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: http://blog.boboism.com
+url: http://boboism.github.io
 title: '{ blog: :boboism }'
 subtitle: '{ content: %w( ruby rails java html5 javascript stylesheet database ) }'
 author: Jianbo Su
