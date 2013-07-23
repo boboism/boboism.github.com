@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Spider | { blog: :boboism }]]></title>
+  <link href="http://boboism.github.io/blog/categories/spider/atom.xml" rel="self"/>
+  <link href="http://boboism.github.io/"/>
+  <updated>2013-07-23T16:24:30+08:00</updated>
+  <id>http://boboism.github.io/</id>
+  <author>
+    <name><![CDATA[Jianbo Su]]></name>
+    <email><![CDATA[sujianbo@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[如何使用Anemone来爬视频地址]]></title>
+    <link href="http://boboism.github.io/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone/"/>
+    <updated>2013-05-23T20:06:00+08:00</updated>
+    <id>http://boboism.github.io/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone</id>
+    <content type="html"><![CDATA[<p>刚刚翻回之前写的一些爬虫脚本，想分享一下其中一个比较有意思的爬虫。
+这个爬虫脚本使用的是<a href="http://www.chriskite.com">Chris Kite</a>写的<a href="http://anemone.rubyforge.org/">Anemone</a>（一个Ruby的爬虫库）。它提供了非常简单的DSL用来爬取每一个页面以及其URLs，官方说会自动计算出其需要的最短路径。而且，这个爬虫库是多线程。由于Ruby正则表达式的写法简洁，因此，看上去非常简短。</p>
+
+<p>主要用到的gem有anemone，digest，还有用来保存链接的mongo</p>
+
+<p><code>ruby
+gem install anemone
+gem install mongo
+</code></p>
+
+<p>首先，会定义一些全局变量,其中ENTRY_PATTERN是入口，PAGE_PATTERN是要爬的页面，ANY_PATTERN还会包含另外一些需要爬的链接：</p>
+
+<p><code>ruby
+ENTRY_PATTERN = "http://www.oabt.org/?cid=5"
+PAGE_PATTERN  = %r[cid=(?:5|25|6|7|8|11)(?:&amp;page=\d+)?$]
+ANY_PATTERN   = PAGE_PATTERN
+</code>
+接着新建一个MONGODB以及表，因为是要爬<a href="http://www.oabt.org">http://www.oabt.org</a>，所以就直接命名了：</p>
+
+<p><code>ruby
+db = Mongo::Connection.new.db("oabt_org")
+movies = db["movie"]
+</code></p>
+
+<p>接着，是定义Anemone的一些options：</p>
+
+<p><code>ruby
+options = {
+  :threads              =&gt; 1,                # 线程数
+  :verbose              =&gt; true,             # 详细显示
+  :discard_page_bodies  =&gt; true,             
+  :user_agent           =&gt; "Mozilla...",   
+  :delay                =&gt; 0,
+  :obey_robots_txt      =&gt; true,
+  :depth_limit          =&gt; 1,
+  :redirect_limit       =&gt; 5,
+  :storage              =&gt; nil,
+  :cookies              =&gt; nil,
+  :accept_cookies       =&gt; true,
+  :skip_query_strings   =&gt; false,
+  :proxy_host           =&gt; nil,
+  :proxy_port           =&gt; false,
+  :read_timeout         =&gt; 20
+}
+</code></p>
+
+<p>``` ruby 官方代码中的default options <a href="https://github.com/chriskite/anemone/blob/master/lib/anemone/core.rb">https://github.com/chriskite/anemone/blob/master/lib/anemone/core.rb</a></p>
+
+<pre><code>DEFAULT_OPTS = {
+  # run 4 Tentacle threads to fetch pages
+  :threads =&gt; 4,
+  # disable verbose output
+  :verbose =&gt; false,
+  # don't throw away the page response body after scanning it for links
+  :discard_page_bodies =&gt; false,
+  # identify self as Anemone/VERSION
+  :user_agent =&gt; "Anemone/#{Anemone::VERSION}",
+  # no delay between requests
+  :delay =&gt; 0,
+  # don't obey the robots exclusion protocol
+  :obey_robots_txt =&gt; false,
+  # by default, don't limit the depth of the crawl
+  :depth_limit =&gt; false,
+  # number of times HTTP redirects will be followed
+  :redirect_limit =&gt; 5,
+  # storage engine defaults to Hash in +process_options+ if none specified
+  :storage =&gt; nil,
+  # Hash of cookie name =&gt; value to send with HTTP requests
+  :cookies =&gt; nil,
+  # accept cookies from the server and send them back?
+  :accept_cookies =&gt; false,
+  # skip any link with a query string? e.g. http://foo.com/?u=user
+  :skip_query_strings =&gt; false,
+  # proxy server hostname 
+  :proxy_host =&gt; nil,
+  # proxy server port number
+  :proxy_port =&gt; false,
+  # HTTP read timeout in seconds
+  :read_timeout =&gt; nil
+}
+</code></pre>
+
+<p>```</p>
+
+<p>好了，接着就是开始爬了,#focus_crawl中会定义需要爬的URL，只会保留ANY_PATTERN的URL，接着，如果符合PAGE_PATTERN的，会在其页面中找他的title，id，reference url，还有就是他的下载链接：magnet／thunder／ed2k（这里会使用到NOKIGIRI，因为我熟悉css selector，所以代码中直接使用css selecor来抓），接着就会检查他的引用页的hash值是否已经存在，如果不存在就直接插入mongo：</p>
+
+<p>``` ruby
+Anemone.crawl(ENTRY_PATTERN, options) do |anemone|</p>
+
+<p>  anemone.focus_crawl do |page|</p>
+
+<pre><code>p "focus #{page.url}"
+page.links.keep_if{|link| link.to_s =~ ANY_PATTERN}
+</code></pre>
+
+<p>  end</p>
+
+<p>  anemone.on_pages_like(PAGE_PATTERN) do |page|</p>
+
+<pre><code>if page.doc
+  p "crawl #{page.url}"
+  p "crawl header:#{page.headers}"
+  p "crawl code:#{page.code}"
+  p "crawl body:#{page.body}"
+  p "crawl links:#{(page.links||[]).collect(&amp;:to_s).join('\n')}"
+  page.doc.css('tr').each do |tr|
+    p "crawl tr"
+    title, id, ref_url = tr.css('td.name.magTitle a').collect{|a| [a.text, a['rel'], a['href']]}.first
+    if id &amp;&amp; (md5 = Digest::MD5.hexdigest(id)) &amp;&amp; (movies.find({"md5" =&gt; md5}).first.nil?)
+      cat = tr.css("a.sbule").collect{|a| [a['href'][/\d+/], a.text]}.first.join('|')
+      ed2k_url, mag_url, thunder_url = (tr.css('td.dow a.ed2kDown').first||{})['ed2k'], (tr.css('td.dow a.magDown').first||{})['href'], (tr.css('td.dow a.thunder').first||{})['thunderhref']
+      movie = {:md5 =&gt; md5, :cat =&gt; cat, :ref_url =&gt; ref_url, :title =&gt; title, :ed2k_url =&gt; ed2k_url, :mag_url =&gt; mag_url, :thunder_url =&gt; thunder_url}
+      p "Inserting #{movie.inspect}"
+      movies.insert movie
+    end
+  end
+end
+</code></pre>
+
+<p>  end</p>
+
+<p>end
+```</p>
+
+<p>全部的代码如下，总共不到60行的代码：</p>
+
+<p>``` ruby
+require &lsquo;anemone&rsquo;
+require &lsquo;digest/md5&rsquo;
+require &lsquo;mongo&rsquo;</p>
+
+<h1>Patterns</h1>
+
+<p>ENTRY_PATTERN = &ldquo;<a href="http://www.oabt.org/?cid=5">http://www.oabt.org/?cid=5</a>&rdquo;
+PAGE_PATTERN  = %r[cid=(?:5|25|6|7|8|11)(?:&amp;page=\d+)?$]
+ANY_PATTERN   = PAGE_PATTERN</p>
+
+<p>db = Mongo::Connection.new.db(&ldquo;oabt_org&rdquo;)
+movies = db[&ldquo;movie&rdquo;]</p>
+
+<p>options = {
+  :threads              => 1,
+  :verbose              => true,
+  :discard_page_bodies  => true,
+  :user_agent           => &ldquo;Mozilla&hellip;&rdquo;,
+  :delay                => 0,
+  :obey_robots_txt      => true,
+  :depth_limit          => 1,
+  :redirect_limit       => 5,
+  :storage              => nil,
+  :cookies              => nil,
+  :accept_cookies       => true,
+  :skip_query_strings   => false,
+  :proxy_host           => nil,
+  :proxy_port           => false,
+  :read_timeout         => 20
+}
+p &ldquo;begin&rdquo;
+Anemone.crawl(ENTRY_PATTERN, options) do |anemone|</p>
+
+<p>  anemone.focus_crawl do |page|</p>
+
+<pre><code>p "focus #{page.url}"
+page.links.keep_if{|link| link.to_s =~ ANY_PATTERN}
+</code></pre>
+
+<p>  end</p>
+
+<p>  anemone.on_pages_like(PAGE_PATTERN) do |page|</p>
+
+<pre><code>if page.doc
+  p "crawl #{page.url}"
+  p "crawl header:#{page.headers}"
+  p "crawl code:#{page.code}"
+  p "crawl body:#{page.body}"
+  p "crawl links:#{(page.links||[]).collect(&amp;:to_s).join('\n')}"
+  page.doc.css('tr').each do |tr|
+    p "crawl tr"
+    title, id, ref_url = tr.css('td.name.magTitle a').collect{|a| [a.text, a['rel'], a['href']]}.first
+    if id &amp;&amp; (md5 = Digest::MD5.hexdigest(id)) &amp;&amp; (movies.find({"md5" =&gt; md5}).first.nil?)
+      cat = tr.css("a.sbule").collect{|a| [a['href'][/\d+/], a.text]}.first.join('|')
+      ed2k_url, mag_url, thunder_url = (tr.css('td.dow a.ed2kDown').first||{})['ed2k'], (tr.css('td.dow a.magDown').first||{})['href'], (tr.css('td.dow a.thunder').first||{})['thunderhref']
+      movie = {:md5 =&gt; md5, :cat =&gt; cat, :ref_url =&gt; ref_url, :title =&gt; title, :ed2k_url =&gt; ed2k_url, :mag_url =&gt; mag_url, :thunder_url =&gt; thunder_url}
+      p "Inserting #{movie.inspect}"
+      movies.insert movie
+    end
+  end
+end
+</code></pre>
+
+<p>  end</p>
+
+<p>end
+```</p>
+]]></content>
+  </entry>
+  
+</feed>

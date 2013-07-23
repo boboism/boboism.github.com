@@ -1,122 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
 
-<!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <title>{ blog: :boboism }</title>
-  <meta name="author" content="Jianbo Su">
-
-  
-  <meta name="description" content="今天要弄个专利申请，需要提交相关的代码。写了个script，目的是将文件目录下的java文件全部弄在一起，并且写上行号。
-最后看了看生成的txt文件大小，足足有2M多。总数7万多行。 代码如下： 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19 &hellip;">
-  
-
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><![CDATA[{ blog: :boboism }]]></title>
+  <link href="http://boboism.github.io/atom.xml" rel="self"/>
+  <link href="http://boboism.github.io/"/>
+  <updated>2013-07-23T16:24:30+08:00</updated>
+  <id>http://boboism.github.io/</id>
+  <author>
+    <name><![CDATA[Jianbo Su]]></name>
+    <email><![CDATA[sujianbo@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
 
   
-  <link rel="canonical" href="http://boboism.github.io/">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <link href="/atom.xml" rel="alternate" title="{ blog: :boboism }" type="application/atom+xml">
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=Lobster" rel="stylesheet" type="text/css">
-
-  
-
-</head>
-
-<body>
-  <header role="banner"><hgroup>
-  <h1><a href="/">{ blog: :boboism }</a></h1>
-  
-    <h2>{ content: %w( ruby rails java html5 javascript stylesheet database ) }</h2>
-  
-</hgroup>
-
-</header>
-  <div id="navigation">
-    <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="http://google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:boboism.github.io" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
-</ul>
-
-</nav>
-  </div>
-  <div id="body"   class="collapse-sidebar sidebar-footer" >
-    <div id="main">
-      <div id="content">
-        <div class="blog-index">
-  
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/07/23/join-files-with-line-numbers-in-ruby/">用Ruby将源代码文件Join起来,并且加上行号</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-23T16:12:00+08:00" pubdate data-updated="true">2013-07-23 16:07:00 +0800</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>今天要弄个专利申请，需要提交相关的代码。写了个script，目的是将文件目录下的java文件全部弄在一起，并且写上行号。
+  <entry>
+    <title type="html"><![CDATA[用Ruby将源代码文件Join起来,并且加上行号]]></title>
+    <link href="http://boboism.github.io/blog/2013/07/23/join-files-with-line-numbers-in-ruby/"/>
+    <updated>2013-07-23T16:12:00+08:00</updated>
+    <id>http://boboism.github.io/blog/2013/07/23/join-files-with-line-numbers-in-ruby</id>
+    <content type="html"><![CDATA[<p>今天要弄个专利申请，需要提交相关的代码。写了个script，目的是将文件目录下的java文件全部弄在一起，并且写上行号。
 最后看了看生成的txt文件大小，足足有2M多。总数7万多行。</p>
 
 <p>代码如下：</p>
@@ -161,42 +63,15 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/06/07/how-to-read-big-file-in-ruby/">如何使用Ruby来读大文件（日志分析）</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-07T20:08:00+08:00" pubdate data-updated="true">2013-06-07 20:06:00 +0800</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>最近需要读取应用的日志分析数据。打开其中一个节点的Log，发现已经差不多有2G了。我的妈呀～都长这么大了～
+  <entry>
+    <title type="html"><![CDATA[如何使用Ruby来读大文件（日志分析）]]></title>
+    <link href="http://boboism.github.io/blog/2013/06/07/how-to-read-big-file-in-ruby/"/>
+    <updated>2013-06-07T20:08:00+08:00</updated>
+    <id>http://boboism.github.io/blog/2013/06/07/how-to-read-big-file-in-ruby</id>
+    <content type="html"><![CDATA[<p>最近需要读取应用的日志分析数据。打开其中一个节点的Log，发现已经差不多有2G了。我的妈呀～都长这么大了～
 分析文件是件麻烦事，特别是这么大的日志。而且，如果不用程序员的方法还真不知道要看到猴年马月。这是，我想起了Ruby的<a href="http://ruby-doc.org/core-1.9.3/IO.html">IO</a>类以及其子类<a href="http://ruby-doc.org/core-1.9.3/File.html">File</a>。其中有几个方法：</p>
 
 <ol>
@@ -270,42 +145,15 @@
 
 
 <p>Total 12行就可以写一个简单的日志分析啦。回想起如果用Java的话，那是什么状况。不过题外话，这种还是可以用Linux下的Shell＋awk来完成。</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone/">如何使用Anemone来爬视频地址</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-23T20:06:00+08:00" pubdate data-updated="true">2013-05-23 20:05:00 +0800</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>刚刚翻回之前写的一些爬虫脚本，想分享一下其中一个比较有意思的爬虫。
+  <entry>
+    <title type="html"><![CDATA[如何使用Anemone来爬视频地址]]></title>
+    <link href="http://boboism.github.io/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone/"/>
+    <updated>2013-05-23T20:06:00+08:00</updated>
+    <id>http://boboism.github.io/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone</id>
+    <content type="html"><![CDATA[<p>刚刚翻回之前写的一些爬虫脚本，想分享一下其中一个比较有意思的爬虫。
 这个爬虫脚本使用的是<a href="http://www.chriskite.com">Chris Kite</a>写的<a href="http://anemone.rubyforge.org/">Anemone</a>（一个Ruby的爬虫库）。它提供了非常简单的DSL用来爬取每一个页面以及其URLs，官方说会自动计算出其需要的最短路径。而且，这个爬虫库是多线程。由于Ruby正则表达式的写法简洁，因此，看上去非常简短。</p>
 
 <p>主要用到的gem有anemone，digest，还有用来保存链接的mongo</p>
@@ -630,42 +478,15 @@
 </span><span class='line'><span class="k">end</span>
 </span></code></pre></td></tr></table></div></figure>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/22/how-to-write-a-simple-webservice-provider-using-ruby-other-than-java/">如何使用Ruby来写WebService的Provider</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-22T12:14:00+08:00" pubdate data-updated="true">2013-05-22 12:05:00 +0800</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>最近在做一个程序，用于我的EAM（固定资产管理系统）跟公司的ERP对接固定资产的数据。开始是想直接用MES在用的接口系统，修修补补上。
+  <entry>
+    <title type="html"><![CDATA[如何使用Ruby来写WebService的Provider]]></title>
+    <link href="http://boboism.github.io/blog/2013/05/22/how-to-write-a-simple-webservice-provider-using-ruby-other-than-java/"/>
+    <updated>2013-05-22T12:14:00+08:00</updated>
+    <id>http://boboism.github.io/blog/2013/05/22/how-to-write-a-simple-webservice-provider-using-ruby-other-than-java</id>
+    <content type="html"><![CDATA[<p>最近在做一个程序，用于我的EAM（固定资产管理系统）跟公司的ERP对接固定资产的数据。开始是想直接用MES在用的接口系统，修修补补上。
 但是发现这个接口系统相对来说耦合比较厉害，如果要改来用，怕且都要搞个半个月才能上线。
 后来就打算直接用Ruby写算了。于是就有了这篇文章。
 下面看看其中的一个XML规格(大概),这是由ERP项目组定义的规法：</p>
@@ -952,45 +773,7 @@
 
 
 <p>OK~ 大功告成。相对Java版本的接口系统，同样功能大概只用了其1个类（差不多）的代码量就完成了～。</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
-<aside class="sidebar">
-  
-    
-  
-</aside>
-
-      </div>
-    </div>
-    <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Jianbo Su -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a></span>
-</p>
-
-</footer>
-    
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-</body>
-</html>
+</feed>
