@@ -1,102 +1,87 @@
 
-<!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<!DOCTYPE HTML>
+<html>
 <head>
-  <meta charset="utf-8">
-  <title>如何使用Ruby来写WebService的Provider - { blog: :boboism }</title>
-  <meta name="author" content="Jianbo Su">
+	<meta charset="utf-8">
+	<title>如何使用Ruby来写WebService的Provider - { blog: :boboism }</title>
+	<meta name="author" content="Jianbo Su">
 
-  
-  <meta name="description" content="最近在做一个程序，用于我的EAM（固定资产管理系统）跟公司的ERP对接固定资产的数据。开始是想直接用MES在用的接口系统，修修补补上。
+	
+	<meta name="description" content="最近在做一个程序，用于我的EAM（固定资产管理系统）跟公司的ERP对接固定资产的数据。开始是想直接用MES在用的接口系统，修修补补上。
 但是发现这个接口系统相对来说耦合比较厉害，如果要改来用，怕且都要搞个半个月才能上线。
 后来就打算直接用Ruby写算了。于是就有了这篇文章。 &hellip;">
-  
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  
-  <link rel="canonical" href="http://boboism.github.io/blog/2013/05/22/how-to-write-a-simple-webservice-provider-using-ruby-other-than-java/">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <link href="/atom.xml" rel="alternate" title="{ blog: :boboism }" type="application/atom+xml">
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=Lobster" rel="stylesheet" type="text/css">
-
-  
-
+	<link href="/atom.xml" rel="alternate" title="{ blog: :boboism }" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script async="true" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
 </head>
 
+
 <body>
-  <header role="banner"><hgroup>
-  <h1><a href="/">{ blog: :boboism }</a></h1>
-  
-    <h2>{ content: %w( ruby rails java html5 javascript stylesheet database ) }</h2>
-  
-</hgroup>
+	<header id="header" class="inner"><h1><a href="/">{ blog: :boboism }</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="http://google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:boboism.github.io">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		<a class="twitter" href="http://twitter.com/boboism" title="Twitter">Twitter</a>
+		
+		
+		<a class="github" href="https://github.com/boboism" title="GitHub">GitHub</a>
+		
+    
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+    
+	</div>
+	<form class="search" action="http://google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:boboism.github.io">
+	</form>
+</nav>
 
 </header>
-  <div id="navigation">
-    <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="http://google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:boboism.github.io" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
-</ul>
-
-</nav>
-  </div>
-  <div id="body"   class="collapse-sidebar sidebar-footer" >
-    <div id="main">
-      <div id="content">
-        <div>
-<article class="hentry" role="article">
-  
-  <header>
-    
-      <h1 class="entry-title">如何使用Ruby来写WebService的Provider</h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-22T12:14:00+08:00" pubdate data-updated="true">2013-05-22 12:05:00 +0800</time>
-        
-      </p>
-    
-  </header>
-
-
-<div class="entry-content"><p>最近在做一个程序，用于我的EAM（固定资产管理系统）跟公司的ERP对接固定资产的数据。开始是想直接用MES在用的接口系统，修修补补上。
+	
+		
+	
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">如何使用Ruby来写WebService的Provider</h2>
+	<div class="entry-content"><p>最近在做一个程序，用于我的EAM（固定资产管理系统）跟公司的ERP对接固定资产的数据。开始是想直接用MES在用的接口系统，修修补补上。
 但是发现这个接口系统相对来说耦合比较厉害，如果要改来用，怕且都要搞个半个月才能上线。
 后来就打算直接用Ruby写算了。于是就有了这篇文章。
 下面看看其中的一个XML规格(大概),这是由ERP项目组定义的规法：</p>
@@ -386,14 +371,8 @@
 </div>
 
 
-  <footer>
-    <p class="meta">
-      
-  
-
-<span class="byline author vcard">Posted by <span class="fn">Jianbo Su</span></span>
-
-      
+<div class="meta">
+	<div class="date">
 
 
 
@@ -405,63 +384,47 @@
   
 
 
-<time datetime="2013-05-22T12:14:00+08:00" pubdate data-updated="true">2013-05-22 12:05:00 +0800</time>
-      
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/api/'>API</a>, <a class='category' href='/blog/categories/ruby/'>Ruby</a>, <a class='category' href='/blog/categories/soa/'>SOA</a>, <a class='category' href='/blog/categories/webservice/'>WebService</a>
-  
-</span>
+<time datetime="2013-05-22T12:14:00+08:00" pubdate data-updated="true">2013-05-22 12:05:00 +0800</time></div>
+	<div class="tags">
 
 
-    </p>
-    
-      <div class="sharing">
-  
-  
-  
+	<a class='category' href='/blog/categories/api/'>API</a>, <a class='category' href='/blog/categories/ruby/'>Ruby</a>, <a class='category' href='/blog/categories/soa/'>SOA</a>, <a class='category' href='/blog/categories/webservice/'>WebService</a>
+
+
 </div>
-
-    
-    <p class="meta">
-      
-      
-        <a class="basic-alignment right" href="/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone/" title="Next Post: 如何使用Anemone来爬视频地址">如何使用Anemone来爬视频地址 &raquo;</a>
-      
-    </p>
-  </footer>
+	
+</div>
 </article>
 
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+		
+		
+		
+		
+	</div>
+	
 </div>
 
-<aside class="sidebar">
-  
-    
-  
-</aside>
 
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2013
 
-      </div>
-    </div>
-    <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Jianbo Su -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a>. Design by <a href="http://octopressthemes.com">Octopress Themes</a></span>
-</p>
+    Jianbo Su
 
 </footer>
-    
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
 
 
 
 
 
 
-
-
-
-
-
-  </div>
 </body>
 </html>
