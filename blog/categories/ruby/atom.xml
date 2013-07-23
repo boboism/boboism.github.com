@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ruby | { blog: :boboism }]]></title>
+  <link href="http://boboism.github.io/blog/categories/ruby/atom.xml" rel="self"/>
+  <link href="http://boboism.github.io/"/>
+  <updated>2013-06-22T06:03:38+08:00</updated>
+  <id>http://boboism.github.io/</id>
+  <author>
+    <name><![CDATA[Jianbo Su]]></name>
+    <email><![CDATA[sujianbo@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[如何使用Ruby来读大文件（日志分析）]]></title>
+    <link href="http://boboism.github.io/blog/2013/06/07/how-to-read-big-file-in-ruby/"/>
+    <updated>2013-06-07T20:08:00+08:00</updated>
+    <id>http://boboism.github.io/blog/2013/06/07/how-to-read-big-file-in-ruby</id>
+    <content type="html"><![CDATA[<p>最近需要读取应用的日志分析数据。打开其中一个节点的Log，发现已经差不多有2G了。我的妈呀～都长这么大了～
+分析文件是件麻烦事，特别是这么大的日志。而且，如果不用程序员的方法还真不知道要看到猴年马月。这是，我想起了Ruby的<a href="http://ruby-doc.org/core-1.9.3/IO.html">IO</a>类以及其子类<a href="http://ruby-doc.org/core-1.9.3/File.html">File</a>。其中有几个方法：</p>
+
+<ol>
+<li><a href="http://ruby-doc.org/core-1.9.3/IO.html#method-i-read">#read</a></li>
+<li><a href="http://ruby-doc.org/core-1.9.3/IO.html#method-i-each">#each</a></li>
+<li><a href="http://ruby-doc.org/core-1.9.3/IO.html#method-i-readlines">#readlines</a></li>
+</ol>
+
+
+<p>现在逐个介绍一下。</p>
+
+<h2>read([length [, buffer]]) → string, buffer, or nil</h2>
+
+<p>这个函数官方文档上面是这样写的：
+<code>
+Reads length bytes from the I/O stream.
+</code>
+那也就是说，此斯比较适合用来读取二进制文件。OK，不太适合我。下一位。</p>
+
+<h2>each(sep=$/) {|line| block } → ios</h2>
+
+<p>文档上说：
+<code>
+Executes the block for every line in ios, where lines are separated by sep. ios must be opened for reading or an IOError will be raised.
+</code>
+嘿～还可以将每行读进IO，那就非常的好，正好哥的文件比较大，这个很适合。再看看还有没有更好的。</p>
+
+<h2>readlines(sep=$/) → array</h2>
+
+<p>文档上说：
+<code>
+Reads all of the lines in ios, and returns them in anArray.
+</code>
+看来这个是可以按照数组的方式去操作文件行的，不错。但是，还有一个关键的东东，那就是把全部的文件都读到IO中，那就是说，假如我的文件有2G，但是我的系统中只有1G内存，那就有可能再读到一半的时候就挂掉了。</p>
+
+<p>选来选去，还是用<code>#each</code>吧。</p>
+
+<p>以下是分析：假设我现在有个案例，需要找到日志中所有请求IP的前10名，而我的文件每行是以IP打头的，因此，就会写成以下的示例：</p>
+
+<p>``` ruby 案例</p>
+
+<h1>新建Hash，每个key的value初始化为0</h1>
+
+<p>ip_counter = Hash.new{|hash, key| hash[key] = 0}</p>
+
+<h1>打开文件</h1>
+
+<p>File.open(&ldquo;/Users/boboism/Downloads/access.log&rdquo;) do |f|
+  # 读取每一行到内存中
+  f.each(&ldquo;\n&rdquo;) do |line|</p>
+
+<pre><code># 获得IP，并且将IP的字符串转化成Symbol后作为key值，并且在计数器上＋1 
+line.scan(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/).each{|ip| ip_counter[ip.to_sym] += 1}
+</code></pre>
+
+<p>  end
+end</p>
+
+<h1>按照IP出现的先后，由多到少排序，并且获取前10名</h1>
+
+<p>top_ten = Hash[<em>ip_counter.sort_by{|key,value| value</em>-1}.take(10).flatten]
+```</p>
+
+<p>Total 12行就可以写一个简单的日志分析啦。回想起如果用Java的话，那是什么状况。不过题外话，这种还是可以用Linux下的Shell＋awk来完成。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[如何使用Anemone来爬视频地址]]></title>
+    <link href="http://boboism.github.io/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone/"/>
+    <updated>2013-05-23T20:06:00+08:00</updated>
+    <id>http://boboism.github.io/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone</id>
+    <content type="html"><![CDATA[<p>刚刚翻回之前写的一些爬虫脚本，想分享一下其中一个比较有意思的爬虫。
+这个爬虫脚本使用的是<a href="http://www.chriskite.com">Chris Kite</a>写的<a href="http://anemone.rubyforge.org/">Anemone</a>（一个Ruby的爬虫库）。它提供了非常简单的DSL用来爬取每一个页面以及其URLs，官方说会自动计算出其需要的最短路径。而且，这个爬虫库是多线程。由于Ruby正则表达式的写法简洁，因此，看上去非常简短。</p>
+
+<p>主要用到的gem有anemone，digest，还有用来保存链接的mongo</p>
+
+<p><code>ruby
+gem install anemone
+gem install mongo
+</code></p>
+
+<p>首先，会定义一些全局变量,其中ENTRY_PATTERN是入口，PAGE_PATTERN是要爬的页面，ANY_PATTERN还会包含另外一些需要爬的链接：</p>
+
+<p><code>ruby
+ENTRY_PATTERN = "http://www.oabt.org/?cid=5"
+PAGE_PATTERN  = %r[cid=(?:5|25|6|7|8|11)(?:&amp;page=\d+)?$]
+ANY_PATTERN   = PAGE_PATTERN
+</code>
+接着新建一个MONGODB以及表，因为是要爬<a href="http://www.oabt.org">http://www.oabt.org</a>，所以就直接命名了：</p>
+
+<p><code>ruby
+db = Mongo::Connection.new.db("oabt_org")
+movies = db["movie"]
+</code></p>
+
+<p>接着，是定义Anemone的一些options：</p>
+
+<p><code>ruby
+options = {
+  :threads              =&gt; 1,                # 线程数
+  :verbose              =&gt; true,             # 详细显示
+  :discard_page_bodies  =&gt; true,             
+  :user_agent           =&gt; "Mozilla...",   
+  :delay                =&gt; 0,
+  :obey_robots_txt      =&gt; true,
+  :depth_limit          =&gt; 1,
+  :redirect_limit       =&gt; 5,
+  :storage              =&gt; nil,
+  :cookies              =&gt; nil,
+  :accept_cookies       =&gt; true,
+  :skip_query_strings   =&gt; false,
+  :proxy_host           =&gt; nil,
+  :proxy_port           =&gt; false,
+  :read_timeout         =&gt; 20
+}
+</code></p>
+
+<p>``` ruby 官方代码中的default options <a href="https://github.com/chriskite/anemone/blob/master/lib/anemone/core.rb">https://github.com/chriskite/anemone/blob/master/lib/anemone/core.rb</a></p>
+
+<pre><code>DEFAULT_OPTS = {
+  # run 4 Tentacle threads to fetch pages
+  :threads =&gt; 4,
+  # disable verbose output
+  :verbose =&gt; false,
+  # don't throw away the page response body after scanning it for links
+  :discard_page_bodies =&gt; false,
+  # identify self as Anemone/VERSION
+  :user_agent =&gt; "Anemone/#{Anemone::VERSION}",
+  # no delay between requests
+  :delay =&gt; 0,
+  # don't obey the robots exclusion protocol
+  :obey_robots_txt =&gt; false,
+  # by default, don't limit the depth of the crawl
+  :depth_limit =&gt; false,
+  # number of times HTTP redirects will be followed
+  :redirect_limit =&gt; 5,
+  # storage engine defaults to Hash in +process_options+ if none specified
+  :storage =&gt; nil,
+  # Hash of cookie name =&gt; value to send with HTTP requests
+  :cookies =&gt; nil,
+  # accept cookies from the server and send them back?
+  :accept_cookies =&gt; false,
+  # skip any link with a query string? e.g. http://foo.com/?u=user
+  :skip_query_strings =&gt; false,
+  # proxy server hostname 
+  :proxy_host =&gt; nil,
+  # proxy server port number
+  :proxy_port =&gt; false,
+  # HTTP read timeout in seconds
+  :read_timeout =&gt; nil
+}
+</code></pre>
+
+<p>```</p>
+
+<p>好了，接着就是开始爬了,#focus_crawl中会定义需要爬的URL，只会保留ANY_PATTERN的URL，接着，如果符合PAGE_PATTERN的，会在其页面中找他的title，id，reference url，还有就是他的下载链接：magnet／thunder／ed2k（这里会使用到NOKIGIRI，因为我熟悉css selector，所以代码中直接使用css selecor来抓），接着就会检查他的引用页的hash值是否已经存在，如果不存在就直接插入mongo：</p>
+
+<p>``` ruby
+Anemone.crawl(ENTRY_PATTERN, options) do |anemone|</p>
+
+<p>  anemone.focus_crawl do |page|</p>
+
+<pre><code>p "focus #{page.url}"
+page.links.keep_if{|link| link.to_s =~ ANY_PATTERN}
+</code></pre>
+
+<p>  end</p>
+
+<p>  anemone.on_pages_like(PAGE_PATTERN) do |page|</p>
+
+<pre><code>if page.doc
+  p "crawl #{page.url}"
+  p "crawl header:#{page.headers}"
+  p "crawl code:#{page.code}"
+  p "crawl body:#{page.body}"
+  p "crawl links:#{(page.links||[]).collect(&amp;:to_s).join('\n')}"
+  page.doc.css('tr').each do |tr|
+    p "crawl tr"
+    title, id, ref_url = tr.css('td.name.magTitle a').collect{|a| [a.text, a['rel'], a['href']]}.first
+    if id &amp;&amp; (md5 = Digest::MD5.hexdigest(id)) &amp;&amp; (movies.find({"md5" =&gt; md5}).first.nil?)
+      cat = tr.css("a.sbule").collect{|a| [a['href'][/\d+/], a.text]}.first.join('|')
+      ed2k_url, mag_url, thunder_url = (tr.css('td.dow a.ed2kDown').first||{})['ed2k'], (tr.css('td.dow a.magDown').first||{})['href'], (tr.css('td.dow a.thunder').first||{})['thunderhref']
+      movie = {:md5 =&gt; md5, :cat =&gt; cat, :ref_url =&gt; ref_url, :title =&gt; title, :ed2k_url =&gt; ed2k_url, :mag_url =&gt; mag_url, :thunder_url =&gt; thunder_url}
+      p "Inserting #{movie.inspect}"
+      movies.insert movie
+    end
+  end
+end
+</code></pre>
+
+<p>  end</p>
+
+<p>end
+```</p>
+
+<p>全部的代码如下，总共不到60行的代码：</p>
+
+<p>``` ruby
+require &lsquo;anemone&rsquo;
+require &lsquo;digest/md5&rsquo;
+require &lsquo;mongo&rsquo;</p>
+
+<h1>Patterns</h1>
+
+<p>ENTRY_PATTERN = &ldquo;<a href="http://www.oabt.org/?cid=5">http://www.oabt.org/?cid=5</a>&rdquo;
+PAGE_PATTERN  = %r[cid=(?:5|25|6|7|8|11)(?:&amp;page=\d+)?$]
+ANY_PATTERN   = PAGE_PATTERN</p>
+
+<p>db = Mongo::Connection.new.db(&ldquo;oabt_org&rdquo;)
+movies = db[&ldquo;movie&rdquo;]</p>
+
+<p>options = {
+  :threads              => 1,
+  :verbose              => true,
+  :discard_page_bodies  => true,
+  :user_agent           => &ldquo;Mozilla&hellip;&rdquo;,
+  :delay                => 0,
+  :obey_robots_txt      => true,
+  :depth_limit          => 1,
+  :redirect_limit       => 5,
+  :storage              => nil,
+  :cookies              => nil,
+  :accept_cookies       => true,
+  :skip_query_strings   => false,
+  :proxy_host           => nil,
+  :proxy_port           => false,
+  :read_timeout         => 20
+}
+p &ldquo;begin&rdquo;
+Anemone.crawl(ENTRY_PATTERN, options) do |anemone|</p>
+
+<p>  anemone.focus_crawl do |page|</p>
+
+<pre><code>p "focus #{page.url}"
+page.links.keep_if{|link| link.to_s =~ ANY_PATTERN}
+</code></pre>
+
+<p>  end</p>
+
+<p>  anemone.on_pages_like(PAGE_PATTERN) do |page|</p>
+
+<pre><code>if page.doc
+  p "crawl #{page.url}"
+  p "crawl header:#{page.headers}"
+  p "crawl code:#{page.code}"
+  p "crawl body:#{page.body}"
+  p "crawl links:#{(page.links||[]).collect(&amp;:to_s).join('\n')}"
+  page.doc.css('tr').each do |tr|
+    p "crawl tr"
+    title, id, ref_url = tr.css('td.name.magTitle a').collect{|a| [a.text, a['rel'], a['href']]}.first
+    if id &amp;&amp; (md5 = Digest::MD5.hexdigest(id)) &amp;&amp; (movies.find({"md5" =&gt; md5}).first.nil?)
+      cat = tr.css("a.sbule").collect{|a| [a['href'][/\d+/], a.text]}.first.join('|')
+      ed2k_url, mag_url, thunder_url = (tr.css('td.dow a.ed2kDown').first||{})['ed2k'], (tr.css('td.dow a.magDown').first||{})['href'], (tr.css('td.dow a.thunder').first||{})['thunderhref']
+      movie = {:md5 =&gt; md5, :cat =&gt; cat, :ref_url =&gt; ref_url, :title =&gt; title, :ed2k_url =&gt; ed2k_url, :mag_url =&gt; mag_url, :thunder_url =&gt; thunder_url}
+      p "Inserting #{movie.inspect}"
+      movies.insert movie
+    end
+  end
+end
+</code></pre>
+
+<p>  end</p>
+
+<p>end
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[如何使用Ruby来写WebService的Provider]]></title>
+    <link href="http://boboism.github.io/blog/2013/05/22/how-to-write-a-simple-webservice-provider-using-ruby-other-than-java/"/>
+    <updated>2013-05-22T12:14:00+08:00</updated>
+    <id>http://boboism.github.io/blog/2013/05/22/how-to-write-a-simple-webservice-provider-using-ruby-other-than-java</id>
+    <content type="html"><![CDATA[<p>最近在做一个程序，用于我的EAM（固定资产管理系统）跟公司的ERP对接固定资产的数据。开始是想直接用MES在用的接口系统，修修补补上。
+但是发现这个接口系统相对来说耦合比较厉害，如果要改来用，怕且都要搞个半个月才能上线。
+后来就打算直接用Ruby写算了。于是就有了这篇文章。
+下面看看其中的一个XML规格(大概),这是由ERP项目组定义的规法：</p>
+
+<p>``` xml 资产导入
+&lt;?xml version=&ldquo;1.0&rdquo; encoding=&ldquo;UTF-8&rdquo;?>
+<Interface Sender="EAM" Receiver="ERP" Billtype="F10">
+  <Bill></p>
+
+<pre><code>&lt;BillHeader&gt;
+  &lt;AcceptanceDate&gt;2006-08-28 00:00:00&lt;/AcceptanceDate&gt;
+  &lt;AssetName&gt;笔记本电脑&lt;/AssetName&gt;
+  &lt;AssetNo&gt;703021&lt;/AssetNo&gt;
+  &lt;Brand&gt;IBM X60&lt;/Brand&gt;
+  &lt;Category&gt;7&lt;/Category&gt;
+  &lt;IsSpecialFund&gt;否&lt;/IsSpecialFund&gt;
+  &lt;IsTariff&gt;否&lt;/IsTariff&gt;
+  &lt;IsVat&gt;否&lt;/IsVat&gt;
+  &lt;Model&gt;&lt;/Model&gt;
+  &lt;OriginalValue&gt;100.0&lt;/OriginalValue&gt;
+  &lt;Salvage&gt;20.0&lt;/Salvage&gt;
+  &lt;SerialNo&gt;L3B6534&lt;/SerialNo&gt;
+  &lt;ServiceDate&gt;2006-08-28 00:00:00&lt;/ServiceDate&gt;
+  &lt;SubCategory&gt;03&lt;/SubCategory&gt;
+  &lt;TaxPreferType&gt;不属于&lt;/TaxPreferType&gt;
+&lt;/BillHeader&gt;
+&lt;BillBody&gt;
+  &lt;Entry&gt;
+    &lt;AllocationQuantity&gt;0.5&lt;/AllocationQuantity&gt;
+    &lt;ConstructionPeriod&gt;1&lt;/ConstructionPeriod&gt;
+    &lt;CostCenter&gt;00001&lt;/CostCenter&gt;
+    &lt;ManagementDepartment&gt;00002&lt;/ManagementDepartment&gt;
+    &lt;SpecialPurpose&gt;01&lt;/SpecialPurpose&gt;
+  &lt;/Entry&gt;
+  &lt;Entry&gt;
+    &lt;AllocationQuantity&gt;0.5&lt;/AllocationQuantity&gt;
+    &lt;ConstructionPeriod&gt;1&lt;/ConstructionPeriod&gt;
+    &lt;CostCenter&gt;00008&lt;/CostCenter&gt;
+    &lt;ManagementDepartment&gt;00002&lt;/ManagementDepartment&gt;
+    &lt;SpecialPurpose&gt;01&lt;/SpecialPurpose&gt;
+  &lt;/Entry&gt;
+&lt;/BillBody&gt;
+</code></pre>
+
+<p>  </Bill>
+</Interface>
+```</p>
+
+<p>我最近都在用Ruby on Rails在开发项目（个人／公司），所以感觉上这个应该没有太大困难。不过还是有以下问题需要解决：</p>
+
+<ul>
+<li>不太规范的SOAP XML内容格式。</li>
+<li>How to call webservice？</li>
+<li>定时执行方式？</li>
+</ul>
+
+
+<p>想用ActiveRecord直接生成XML，但是需求的XML跟ActiveRecord直接生成出来的样子不太一样。后来看了ActiveRecord的XML相关的builder的代码，觉得还是使用builder定制吧。
+就有了以下的代码：</p>
+
+<p>``` ruby ActiveRecord::Base#to_erp_xml
+module ActiveRecord
+  class Base</p>
+
+<pre><code>def to_erp_xml(options={})
+  require 'builder' unless defined?(Builder)
+  options = options.dup
+  xml = ::Builder::XmlMarkup.new
+  xml.instruct! :xml, :version =&gt; "1.0", :encoding =&gt; "UTF-8"
+  interface_attributes = [:sender, :receiver, :billtype].inject({}) do |acc, im| 
+    acc.merge({im.to_s.camelize =&gt; options[:interface][im]}) if options[:interface][im]
+  end
+  xml.Interface(interface_attributes) do |interface|
+    if options[:include]
+      interface.Bill do |bill|
+        bill.BillHeader do |bill_header|
+          self.class.column_names.sort.each do |col|
+            unless options[:except] &amp;&amp; Array(options[:except]).include?(col.to_sym)
+              bill_header.tag! col.to_s.camelize, self[col.to_sym]
+            end
+          end
+        end
+        bill.BillBody do |bill_body|
+          Array(options[:include]).each do |attr|
+            self.send(attr.to_sym).each do |association|
+              bill_body.Entry do |entity|
+                association.class.column_names.sort.each do |col| 
+                  unless options[:except] &amp;&amp; Array(options[:except]).include?(col.to_sym)
+                    entity.tag! col.to_s.camelize, association[col.to_sym]
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+  xml.target!.to_s
+end
+</code></pre>
+
+<p>  end
+end
+```</p>
+
+<p>为啥写的这么别扭？其实是因为我直接使用了db的view去抓数据。哈哈哈，为防以后会有变更，这样直接修改SQL就可以了：</p>
+
+<p>``` ruby AssetF10&amp;AllocationF10
+class AssetF10 &lt; ActiveRecord::Base
+  self.table_name = &ldquo;vw_asset_erp&rdquo;
+  self.primary_key = &ldquo;id&rdquo;</p>
+
+<p>  has_many :allocations, :class_name => &ldquo;AllocationF10&rdquo;, :foreign_key => &ldquo;asset_id&rdquo;
+end</p>
+
+<p>class AllocationF10 &lt; ActiveRecord::Base
+  self.table_name = &ldquo;vw_asset_allocation_erp&rdquo;
+  self.primary_key = &ldquo;id&rdquo;</p>
+
+<p>  belongs_to :asset, :class_name => &ldquo;AssetF10&rdquo;#, :foreign_key => &ldquo;asset_id&rdquo;
+end
+```</p>
+
+<p>到这步，基本上XML是能够生成了，但是如何去调用呢？上rubygems.org看了看包的使用量，soap这一块savon相对来说比较好，而且文档还是很充分。感觉这样写的话相对Java的SOA调用使用xfire非常简洁方便。</p>
+
+<p>``` ruby Savon.client
+client = Savon.client(:wsdl => &ldquo;<a href="http://172.18.81.20/BOI/Service.asmx?WSDL">http://172.18.81.20/BOI/Service.asmx?WSDL</a>&rdquo;)
+ws_attrs = {
+  :interface => {:sender => &ldquo;EAM&rdquo;, :receiver => &ldquo;ERP&rdquo;, :billtype => &ldquo;F10&rdquo;},
+  :func_name => &ldquo;FixedAssetImport&rdquo;,
+  :handshake => &ldquo;111111&rdquo;
+}
+receivable_assets = []
+unreceivable_assets = []
+AssetF10.all.each do |asset|
+  token = UUIDTools::UUID.random_create.to_s.gsub(&ldquo;&ndash;&rdquo;,&ldquo;&rdquo;).upcase
+  parameters = asset.to_erp_xml(ws_attrs.merge({:include => :allocations, :except => [:id, :asset_sync_status, :asset_id]}))
+  resp = client.call(:boi_invoke, :message => {</p>
+
+<pre><code>:from       =&gt; "#{ws_attrs[:interface][:sender]}#{ws_attrs[:handshake]}", 
+:to         =&gt; ws_attrs[:interface][:receiver], 
+:token      =&gt; token,
+:func_name  =&gt; "#{ws_attrs[:func_name]}_#{ws_attrs[:interface][:billtype]}", 
+:parameters =&gt; "#{parameters.to_s}" })
+</code></pre>
+
+<p>  p parameters
+  if resp.body[:boi_invoke_response][:boi_invoke_result]</p>
+
+<pre><code>receivable_assets &lt;&lt; {asset.asset_no =&gt; "TOKEN=#{token}"}
+# update records
+asset.asset_sync_status = 1
+asset.save
+</code></pre>
+
+<p>  else</p>
+
+<pre><code>unreceivable_assets &lt;&lt; {asset.asset_no =&gt; "TOKEN=#{token} #{resp.body[:boi_invoke_response][:result]}"}
+</code></pre>
+
+<p>  end
+end
+```
+OK，webservice call的问题已经解决了。就剩下最后一个问题，定时调用！
+一开始就想通过linux crontab来定时调用这接口，这样就会相对于固定资产管理系统本身的sidekiq独立起来（毕竟这个是一个月才调用1次的接口，无需实时调要求，感觉也没有这个必要）</p>
+
+<p>``` bash eam_soa_f10.sh</p>
+
+<h1>!/bin/sh</h1>
+
+<p>/home/it/.rvm/rubies/ruby-1.9.3-p374/bin/ruby /home/it/projects/ruby/cli/eam_soa/eam_soa_f10.rb >> /home/it/projects/ruby/cli/eam_soa/eam_soa_f10.log 2>&amp;1
+```</p>
+
+<p>接着在crontab中增加一行调用：</p>
+
+<p><code>bash crontab
+* * 25 * * /home/it/projects/ruby/cli/eam_soa/eam_soa_f10.sh
+</code></p>
+
+<p>OK~ 大功告成。相对Java版本的接口系统，同样功能大概只用了其1个类（差不多）的代码量就完成了～。</p>
+]]></content>
+  </entry>
+  
+</feed>
