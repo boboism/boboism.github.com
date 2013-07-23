@@ -3,10 +3,10 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>Category: Crawler - { blog: :boboism }</title>
+	<title>{ blog: :boboism }</title>
     <meta name="author" content="boboism">
     
-	<meta name="description" content="Category: Crawler">
+	<meta name="description" content="Search Results $('#search_results').tapir({ 'token': '', 'complete' : function() { document.getElementById('search_loading').style.display="none &hellip;">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -93,29 +93,21 @@
 <div id="toload">
 <!-- begin toload --> 
     <div id="content" class="inner">
-        
-	
+        <h1 class="entry-title"><center>Search Results</center></h1>
+<div id="search_loading" style="margin: 40px 0">
+    <center><img src="/images/loading.gif"></center>
+</div>
 
-
-	
-	
-	<section class="archives"><h1 class="year">2013</h1>
-
-<article>
-  <h2 class="title"><a href="/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone/">如何使用Anemone来爬视频地址</a></h2>
-	<div class="meta">
-		<span class="date">May 23</span>
-		<span class="tags">
-
-
-	<a class='category' href='/blog/categories/anemone/'>Anemone</a>, <a class='category' href='/blog/categories/crawler/'>Crawler</a>, <a class='category' href='/blog/categories/ruby/'>Ruby</a>, <a class='category' href='/blog/categories/spider/'>Spider</a>
-
-
-</span>
-	    
-	</div>
-</article>
-
+<script type="text/javascript" src="/javascripts/jquery-tapir.js"></script>
+<div id="search_results" style="display:none">
+<br>
+</div>
+<script>
+         $('#search_results').tapir({
+             'token': '',
+             'complete' : function() { document.getElementById('search_loading').style.display="none"; }
+         });
+</script>
 
 
     </div>

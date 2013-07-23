@@ -4,99 +4,114 @@
 <head>
 	<meta charset="utf-8">
 	<title>Category: Ruby - { blog: :boboism }</title>
-	<meta name="author" content="Jianbo Su">
-
-	
+    <meta name="author" content="boboism">
+    
 	<meta name="description" content="Category: Ruby">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 	<link href="/atom.xml" rel="alternate" title="{ blog: :boboism }" type="application/atom+xml">
 	<link rel="canonical" href="">
-	<link href="/favicon.png" rel="shortcut icon">
-	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-	<script async="true" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-	
+	<link href="/favicon.ico" rel="shortcut icon">
+    <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+
+    <link href='http://fonts.googleapis.com/css?family=Slackey' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Amethysta' rel='stylesheet' type='text/css'>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+    <script type="text/javascript" src="/javascripts/jquery-tapir.js"></script>
+
+    <!-- remove or comment it to disable ajaxification -->   
+    <script src="/javascripts/ajaxify.js"></script>
+   
+    
+    
+
 </head>
 
 
 <body>
-	<header id="header" class="inner"><h1><a href="/">{ blog: :boboism }</a></h1>
-<nav id="main-nav"><ul class="main">
-	<li><a href="/">Blog</a></li>
-	<li><a href="/blog/archives">Archives</a></li>
+    <div id="wrapper">
+    <header id="header" class="inner"><!-- for more effects see _animate.scss -->
+<h1 class="animated bounceInDown">
+    <div id="headerbg">
+        boboism
+    </div>
+</h1>
+<br>
+
+<ul id="social-links" style="text-align:center">
+  
+  <!-- GitHub -->
+  <li>
+  <a href="https://github.com/boboism" class="github" title="Github"></a>
+  </li>
+  
+  
+  <!-- Google Plus -->
+  <li>
+  <a href="http://plus.google.com/101957010675404436589?rel=author" class="google" title="Google+"></a>
+  </li>
+  
+  
+  
+  <!-- Twitter -->
+  <li>
+  <a href="http://www.twitter.com/boboism" class="twitter" title="Twitter"></a>
+  </li>
+  
+  
+  
+  
+  
 </ul>
-</nav>
-<nav id="mobile-nav">
-	<div class="alignleft menu">
-		<a class="button">Menu</a>
-		<div class="container"><ul class="main">
-	<li><a href="/">Blog</a></li>
-	<li><a href="/blog/archives">Archives</a></li>
+
+
+<!-- use full url including 'index.html' for navigation bar if you are using ajax -->
+<ul id="nav">
+	<li id="ajax"><a href="/index.html">Home</a></li>
+	<li id="ajax"><a href="/blog/archives/index.html">Archives</a></li>
+    <li><a href="/atom.xml">RSS</a></li>
+    
+    <li>
+    <div id="dark">
+        <form method="get" action="/search.html" id="search">
+            <input name="query" type="text" placeholder="Search..." x-webkit-speech />
+        </form>
+    </div>
+    </li>
+        
 </ul>
-</div>
-	</div>
-	<div class="alignright search">
-		<a class="button"></a>
-		<div class="container">
-			<form action="http://google.com/search" method="get">
-				<input type="text" name="q" results="0">
-				<input type="hidden" name="q" value="site:boboism.github.io">
-			</form>
-		</div>
-	</div>
-</nav>
-<nav id="sub-nav" class="alignright">
-	<div class="social">
-		
-		
-		
-		<a class="twitter" href="http://twitter.com/boboism" title="Twitter">Twitter</a>
-		
-		
-		<a class="github" href="https://github.com/boboism" title="GitHub">GitHub</a>
-		
-    
-		
-		
-		
-		
-		
-		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
-		
-    
-	</div>
-	<form class="search" action="http://google.com/search" method="get">
-		<input class="alignright" type="text" name="q" results="0">
-		<input type="hidden" name="q" value="site:boboism.github.io">
-	</form>
-</nav>
+
+
+
 
 </header>
-	
-		
-	
-	<div id="content" class="inner">
+
+<div id="toload">
+<!-- begin toload --> 
+    <div id="content" class="inner">
+        
 	
 
 
 	
 	
 	<section class="archives"><h1 class="year">2013</h1>
-	
 
 <article>
-	<h2 class="title"><a href="/blog/2013/07/23/join-files-with-line-numbers-in-ruby/">用Ruby将源代码文件Join起来,并且加上行号</a></h2>
+  <h2 class="title"><a href="/blog/2013/07/23/join-files-with-line-numbers-in-ruby/">用Ruby将源代码文件Join起来,并且加上行号</a></h2>
 	<div class="meta">
-		<div class="date">Jul 23</div>
-		<div class="tags">
+		<span class="date">Jul 23</span>
+		<span class="tags">
 
 
 	<a class='category' href='/blog/categories/ruby/'>Ruby</a>
 
 
-</div>
+</span>
 	    
 	</div>
 </article>
@@ -106,16 +121,16 @@
 
 
 <article>
-	<h2 class="title"><a href="/blog/2013/06/07/how-to-read-big-file-in-ruby/">如何使用Ruby来读大文件（日志分析）</a></h2>
+  <h2 class="title"><a href="/blog/2013/06/07/how-to-read-big-file-in-ruby/">如何使用Ruby来读大文件（日志分析）</a></h2>
 	<div class="meta">
-		<div class="date">Jun  7</div>
-		<div class="tags">
+		<span class="date">Jun  7</span>
+		<span class="tags">
 
 
 	<a class='category' href='/blog/categories/ruby/'>Ruby</a>
 
 
-</div>
+</span>
 	    
 	</div>
 </article>
@@ -125,16 +140,16 @@
 
 
 <article>
-	<h2 class="title"><a href="/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone/">如何使用Anemone来爬视频地址</a></h2>
+  <h2 class="title"><a href="/blog/2013/05/23/how-to-crawl-a-video-url-using-anemone/">如何使用Anemone来爬视频地址</a></h2>
 	<div class="meta">
-		<div class="date">May 23</div>
-		<div class="tags">
+		<span class="date">May 23</span>
+		<span class="tags">
 
 
 	<a class='category' href='/blog/categories/anemone/'>Anemone</a>, <a class='category' href='/blog/categories/crawler/'>Crawler</a>, <a class='category' href='/blog/categories/ruby/'>Ruby</a>, <a class='category' href='/blog/categories/spider/'>Spider</a>
 
 
-</div>
+</span>
 	    
 	</div>
 </article>
@@ -144,28 +159,35 @@
 
 
 <article>
-	<h2 class="title"><a href="/blog/2013/05/22/how-to-write-a-simple-webservice-provider-using-ruby-other-than-java/">如何使用Ruby来写WebService的Provider</a></h2>
+  <h2 class="title"><a href="/blog/2013/05/22/how-to-write-a-simple-webservice-provider-using-ruby-other-than-java/">如何使用Ruby来写WebService的Provider</a></h2>
 	<div class="meta">
-		<div class="date">May 22</div>
-		<div class="tags">
+		<span class="date">May 22</span>
+		<span class="tags">
 
 
 	<a class='category' href='/blog/categories/api/'>API</a>, <a class='category' href='/blog/categories/ruby/'>Ruby</a>, <a class='category' href='/blog/categories/soa/'>SOA</a>, <a class='category' href='/blog/categories/webservice/'>WebService</a>
 
 
-</div>
+</span>
 	    
 	</div>
 </article>
 
 
+
+    </div>
+    <footer id="footer">
+    <div style="display:inline">
+    Copyright &copy; 2013
+
+    boboism
+. Powered by <a href="http://octopress.org">Octopress</a> | 
+    Theme <a href="http://github.com/panks/fabric">fabric</a> by <a href="http://panks.me">Pankaj Kumar</a>
 </div>
-	<footer id="footer" class="inner">Copyright &copy; 2013
 
-    Jianbo Su
 
-</footer>
-	<script src="/javascripts/slash.js"></script>
+    </footer>
+    <script src="/javascripts/fabric.js"></script>
 <script src="/javascripts/jquery.fancybox.pack.js"></script>
 <script type="text/javascript">
 (function($){
@@ -178,5 +200,14 @@
 
 
 
+<!-- end toload --> 
+</div>
+</div>
+<script src="/javascripts/jquery.ui.totop.js" type="text/javascript"></script>
+<script type="text/javascript">
+/*<![CDATA[*/
+;(function($){$().UItoTop({easingType:'easeOutCirc'});})(jQuery); 
+/*]]>*/
+</script><!-- remove it to remove the scroll to top button -->
 </body>
 </html>
